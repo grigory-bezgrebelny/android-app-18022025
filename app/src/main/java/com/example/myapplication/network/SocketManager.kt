@@ -1,40 +1,57 @@
 package com.example.myapplication.network
 
 import android.util.Log
+import com.example.myapplication.entity.TestRequest
+import com.example.myapplication.entity.TestResponse
+import kotlinx.serialization.json.Json
 import java.io.DataInputStream
+import java.io.OutputStream
 import java.net.Socket
 import java.nio.ByteBuffer
-
-private const val TAG = "SocketManager"
 
 class SocketManager(
     private val address: String,
     private val port: Int
 ) {
+
+    companion object {
+        private const val TAG = "SocketManager"
+    }
+
     private var socket: Socket? = null
+    private var inputStream: DataInputStream? = null
+    private var outputStream: OutputStream? = null
 
-    fun connect() {
-        socket = Socket(address, port)
+    fun connect(): Boolean {
+        val s = Socket(address, port)
 
-        Log.d(TAG, "connected: ${socket?.isConnected}")
+        Log.d(TAG, "connected: ${s.isConnected}")
+
+        s.soTimeout = 5000
+        socket = s
+        inputStream = DataInputStream(s.getInputStream())
+        outputStream = s.getOutputStream()
+
+        return s.isConnected
     }
 
     fun send(request: TestRequest) {
-        val message = "{ request }" // <- request
+        val outputStream = outputStream ?: throw IllegalStateException("outputStream is null!")
+
+        val message = Json.encodeToString(request)
 
         Log.i(TAG, "sending: $message")
 
         val messageBytes = message.toByteArray()
         val lengthBytes = ByteBuffer.allocate(4).putInt(messageBytes.size).array()
 
-        val outputStream = socket?.getOutputStream()
-        outputStream?.write(lengthBytes)
-        outputStream?.write(messageBytes)
-        outputStream?.flush()
+        outputStream.write(lengthBytes)
+        outputStream.write(messageBytes)
+        outputStream.flush()
     }
 
     fun receive(): TestResponse {
-        val inputStream = DataInputStream(socket?.getInputStream())
+        val inputStream = inputStream ?: throw IllegalStateException("inputStream is null!")
 
         val lengthBytes = ByteArray(4)
         inputStream.readFully(lengthBytes)
@@ -46,10 +63,14 @@ class SocketManager(
 
         Log.d(TAG, "received: $message")
 
-        return TestResponse(false) // <- message
+        return Json.decodeFromString<TestResponse>(message)
     }
 
     fun close() {
+        inputStream?.close()
+        inputStream = null
+        outputStream?.close()
+        outputStream = null
         socket?.close()
         socket = null
     }

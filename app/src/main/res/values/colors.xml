@@ -5,4 +5,8 @@
     <color name="background_green">#7BA151</color>
     <color name="primary_green">#9BCC34</color>
     <color name="secondary_gray">#B2B2B3</color>
+    <color name="blue">#3DB2FE</color>
+    <color name="blue_variant">#DEF3FE</color>
+    <color name="spinner_bg">#F2F2F2</color>
+    <color name="divider_bg">#0D000000</color>
 </resources>

@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">My Application</string>
-    <string name="send">Отправить</string>>
+    <string name="send">Отправить</string>
+    <string name="no_connection">Нет соединения с сервером</string>
+    <string name="hello_username">Привет, Username!</string>
+    <string name="message_text">Расскажи о себе.\nЭто необходимо, чтобы подбирать партнёров за столом</string>
+    <string name="gender">Пол:</string>
+    <string name="age">Возраст:</string>
+    <string name="next">Продолжить</string>
+    <string name="allowed">Server resp: Allowed</string>
+    <string name="not_allowed">Server resp: Not allowed</string>
 </resources>
